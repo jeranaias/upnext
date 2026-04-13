@@ -4,16 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
 <title>UpNext — Event Tracker</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>▲</text></svg>">
 <link rel="apple-touch-icon" href="icon-192.png">
+<noscript><style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;color:#475569}body::after{content:"JavaScript is required to run UpNext."}</style></noscript>
 <style>
+/* ===== VARIABLES ===== */
 :root {
   --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0;
-  --text: #0f172a; --text2: #475569; --text3: #94a3b8;
+  --text: #0f172a; --text2: #475569; --text3: #64748b;
   --accent: #6366f1; --accent-light: #eef2ff; --accent-dark: #4f46e5;
   --green: #22c55e; --green-bg: #f0fdf4; --green-border: #86efac;
   --amber: #f59e0b; --amber-bg: #fffbeb; --amber-border: #fcd34d;
@@ -21,135 +24,112 @@
   --radius: 14px; --radius-sm: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
   --shadow-lg: 0 4px 20px rgba(0,0,0,.08);
+  --nav-h: 60px;
 }
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  background: var(--bg); color: var(--text); min-height:100dvh;
-  overscroll-behavior: none; -webkit-font-smoothing: antialiased;
-}
-button { font:inherit; cursor:pointer; border:none; background:none; }
-input, textarea { font:inherit; }
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0f172a;--surface:#1e293b;--border:#334155;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --accent:#818cf8;--accent-light:#1e1b4b;--accent-dark:#6366f1;
+  --green-bg:#052e16;--green-border:#166534;
+  --amber-bg:#451a03;--amber-border:#92400e;
+  --red-bg:#450a0a;--shadow-lg:0 4px 20px rgba(0,0,0,.3);
+}}
 
-/* Layout */
-.app { min-height:100dvh; display:flex; flex-direction:column; }
-.screen { flex:1; display:flex; flex-direction:column; }
-.screen-center { justify-content:center; align-items:center; padding:24px; }
-.pad { padding:16px; }
-.scroll { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.gap-2 { gap:8px; } .gap-3 { gap:12px; } .gap-4 { gap:16px; }
-.stack { display:flex; flex-direction:column; }
-.row { display:flex; align-items:center; }
-.between { justify-content:space-between; }
-.center { text-align:center; }
-.flex1 { flex:1; }
-.hide { display:none !important; }
+/* ===== RESET ===== */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea{font:inherit;color:var(--text)}
 
-/* Typography */
-.h1 { font-size:28px; font-weight:800; letter-spacing:-.5px; }
-.h2 { font-size:20px; font-weight:700; }
-.h3 { font-size:16px; font-weight:600; }
-.small { font-size:13px; } .tiny { font-size:11px; }
-.muted { color:var(--text3); } .muted2 { color:var(--text2); }
-.bold { font-weight:700; }
+/* ===== LAYOUT ===== */
+.app{min-height:100dvh;display:flex;flex-direction:column}
+.screen{flex:1;display:flex;flex-direction:column}
+.screen-center{justify-content:center;align-items:center;padding:24px;padding-top:max(24px,env(safe-area-inset-top))}
+.pad{padding:16px;padding-top:max(16px,env(safe-area-inset-top))}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav-h) + 16px)}
+.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}
+.stack{display:flex;flex-direction:column}
+.row{display:flex;align-items:center}
+.between{justify-content:space-between}
+.center{text-align:center}
+.flex1{flex:1}
 
-/* Logo */
-.logo {
-  width:72px; height:72px; border-radius:18px; display:flex; align-items:center; justify-content:center;
-  background: linear-gradient(135deg, var(--accent), #818cf8);
-  color:#fff; font-size:28px; font-weight:900; letter-spacing:-1px;
-  box-shadow: 0 4px 24px rgba(99,102,241,.3);
-}
-.logo-sm { width:40px; height:40px; border-radius:10px; font-size:15px; box-shadow: 0 2px 12px rgba(99,102,241,.2); }
+/* ===== TYPOGRAPHY ===== */
+.h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
+.h2{font-size:20px;font-weight:700}
+.h3{font-size:16px;font-weight:600}
+.small{font-size:13px}.tiny{font-size:11px}
+.muted{color:var(--text3)}.muted2{color:var(--text2)}
+.bold{font-weight:700}
 
-/* Buttons */
-.btn {
-  display:flex; align-items:center; justify-content:center; gap:8px;
-  padding:14px 20px; border-radius:var(--radius); font-weight:600; font-size:16px;
-  transition: transform .1s, opacity .1s; width:100%;
-}
-.btn:active { transform:scale(.97); }
-.btn-primary { background:var(--accent); color:#fff; }
-.btn-primary:active { background:var(--accent-dark); }
-.btn-outline { border:2px solid var(--border); color:var(--text2); background:var(--surface); }
-.btn-outline:active { background:var(--bg); }
-.btn-sm { padding:8px 16px; font-size:14px; width:auto; border-radius:var(--radius-sm); }
-.btn-danger { color:var(--red); }
-.btn-ghost { color:var(--text3); font-size:13px; text-decoration:underline; font-weight:500; padding:8px; }
+/* ===== LOGO ===== */
+.logo{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),#818cf8);color:#fff;font-size:28px;font-weight:900;box-shadow:0 4px 24px rgba(99,102,241,.3)}
 
-/* Chips */
-.chip {
-  display:inline-flex; padding:4px 12px; border-radius:20px;
-  font-size:12px; font-weight:600;
-}
-.chip-accent { background:var(--accent-light); color:var(--accent); }
-.chip-amber { background:var(--amber-bg); color:#b45309; }
+/* ===== BUTTONS ===== */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:var(--radius);font-weight:600;font-size:16px;transition:transform .1s,opacity .1s;width:100%;min-height:48px}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn:disabled{opacity:.3;cursor:default}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn svg{width:20px;height:20px;flex-shrink:0}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:active:not(:disabled){background:var(--accent-dark)}
+.btn-outline{border:2px solid var(--border);color:var(--text2);background:var(--surface)}
+.btn-outline:active:not(:disabled){background:var(--bg)}
+.btn-sm{padding:8px 16px;font-size:14px;width:auto;border-radius:var(--radius-sm);min-height:36px}
+.btn-danger{color:var(--red)}
+.btn-ghost{color:var(--text3);font-size:13px;text-decoration:underline;font-weight:500;padding:8px}
+.btn-ghost:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-/* Cards */
-.card {
-  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:14px; transition: all .2s;
-}
-.card-green { background:var(--green-bg); border-color:var(--green-border); box-shadow:0 0 0 1px var(--green-border); }
-.card-amber { background:var(--amber-bg); border-color:var(--amber-border); box-shadow:0 0 0 1px var(--amber-border); }
-.card-dim { opacity:.5; }
+/* ===== CHIPS ===== */
+.chip{display:inline-flex;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.chip-accent{background:var(--accent-light);color:var(--accent)}
+.chip-amber{background:var(--amber-bg);color:#b45309}
 
-/* Event badge */
-.evt-badge {
-  display:inline-flex; padding:2px 8px; border-radius:5px;
-  background:var(--accent); color:#fff; font-size:11px; font-weight:700;
-}
+/* ===== CARDS ===== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;transition:all .2s}
+.card-green{background:var(--green-bg);border-color:var(--green-border);box-shadow:0 0 12px rgba(34,197,94,.15)}
+.card-amber{background:var(--amber-bg);border-color:var(--amber-border);box-shadow:0 0 12px rgba(245,158,11,.15)}
+.card-dim{opacity:.45}
+.evt-badge{display:inline-flex;padding:2px 8px;border-radius:5px;background:var(--accent);color:#fff;font-size:11px;font-weight:700}
 
-/* Inputs */
-.input {
-  width:100%; padding:12px 16px; border:2px solid var(--border); border-radius:var(--radius);
-  background:var(--surface); font-size:16px; outline:none; transition:border .2s;
-}
-.input:focus { border-color:var(--accent); }
-textarea.input { resize:none; font-family:monospace; font-size:13px; line-height:1.6; }
+/* ===== INPUTS ===== */
+.input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius);background:var(--surface);font-size:16px;outline:none;transition:border .2s}
+.input:focus{border-color:var(--accent)}
+.input:focus-visible{outline:none}
+textarea.input{resize:none;font-family:monospace;font-size:13px;line-height:1.6}
 
-/* Bottom nav */
-.nav {
-  display:flex; border-top:1px solid var(--border); background:var(--surface);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-.nav-item {
-  flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
-  padding:8px 0; font-size:10px; font-weight:600; color:var(--text3);
-  transition: color .15s;
-}
-.nav-item.active { color:var(--accent); }
-.nav-item svg { width:22px; height:22px; }
+/* ===== BOTTOM NAV ===== */
+nav.nav{position:fixed;bottom:0;left:0;right:0;display:flex;border-top:1px solid var(--border);background:var(--surface);padding-bottom:env(safe-area-inset-bottom);height:var(--nav-h);z-index:50}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 0;font-size:10px;font-weight:600;color:var(--text3);transition:color .15s}
+.nav-item.active{color:var(--accent)}
+.nav-item svg{width:22px;height:22px}
+.nav-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 
-/* Alert overlay */
-.overlay {
-  position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center;
-  padding:24px; background:rgba(0,0,0,.4); backdrop-filter:blur(4px);
-  animation: fadeIn .2s ease;
-}
-.overlay-card {
-  background:var(--surface); border-radius:20px; padding:28px; max-width:340px; width:100%;
-  box-shadow:var(--shadow-lg); text-align:center; animation: slideUp .25s ease;
-}
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
-@keyframes slideUp { from{transform:translateY(16px);opacity:0} to{transform:translateY(0);opacity:1} }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-.pulse { animation: pulse 1.5s ease-in-out infinite; }
+/* ===== OVERLAY / MODAL ===== */
+.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);animation:fadeIn .2s ease}
+.overlay-card{background:var(--surface);border-radius:20px;padding:28px;max-width:340px;width:100%;box-shadow:var(--shadow-lg);text-align:center;animation:slideUp .25s ease}
 
-/* Big number */
-.big-num {
-  font-size:80px; font-weight:900; color:var(--accent); line-height:1;
-  letter-spacing:-4px;
-}
+/* ===== TOAST ===== */
+.toast{position:fixed;top:max(16px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:200;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 20px;box-shadow:var(--shadow-lg);font-size:14px;font-weight:600;animation:slideDown .25s ease;pointer-events:none}
+@keyframes slideDown{from{transform:translateX(-50%) translateY(-20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.pulse{animation:pulse 1.5s ease-in-out infinite}
+
+/* ===== BIG NUMBER ===== */
+.big-num{font-size:80px;font-weight:900;color:var(--accent);line-height:1;letter-spacing:-4px}
 </style>
 </head>
 <body>
-<div id="app" class="app"></div>
+<div id="app" class="app" role="application" aria-label="UpNext Event Tracker"></div>
 
 <script>
 // ======================== STATE ========================
 const S = {
-  screen: 'home', // home | review | find | app
+  screen: 'home',
   tab: 'dashboard',
   meet: null,
   swimmers: [],
@@ -162,15 +142,15 @@ const S = {
 };
 
 const LS = {
-  save(k,v) { try { localStorage.setItem('upnext_'+k, JSON.stringify(v)); } catch(e){} },
-  load(k) { try { return JSON.parse(localStorage.getItem('upnext_'+k)); } catch(e) { return null; } },
-  clear() { ['meet','swimmers','currentEvent','totalEvents','settings'].forEach(k => localStorage.removeItem('upnext_'+k)); }
+  save(k,v) { try { localStorage.setItem('upnext_'+k, JSON.stringify(v)); } catch(e){ console.warn('Storage full or blocked', e); } },
+  load(k) { try { return JSON.parse(localStorage.getItem('upnext_'+k)); } catch(e) { console.warn('Corrupt storage key:', k); localStorage.removeItem('upnext_'+k); return null; } },
+  clear() { ['meet','swimmers','currentEvent','totalEvents','settings','alertsShown'].forEach(k => localStorage.removeItem('upnext_'+k)); }
 };
 
 function persist() {
   LS.save('meet', S.meet); LS.save('swimmers', S.swimmers);
   LS.save('currentEvent', S.currentEvent); LS.save('totalEvents', S.totalEvents);
-  LS.save('settings', S.settings);
+  LS.save('settings', S.settings); LS.save('alertsShown', S.alertsShown);
 }
 
 function loadState() {
@@ -179,84 +159,113 @@ function loadState() {
   const ce = LS.load('currentEvent'); if (ce != null) S.currentEvent = ce;
   const te = LS.load('totalEvents'); if (te) S.totalEvents = te;
   const st = LS.load('settings'); if (st) S.settings = { ...S.settings, ...st };
+  const as = LS.load('alertsShown'); if (as) S.alertsShown = as;
   if (S.meet) S.screen = 'app';
 }
 
-// ======================== RENDER ENGINE ========================
-const $ = s => document.getElementById(s);
+// ======================== RENDER ========================
+const $ = id => document.getElementById(id);
 let _pendingFocus = null;
 
 function render() {
   const r = { home: renderHome, review: renderReview, find: renderFind, app: renderApp }[S.screen] || renderHome;
   $('app').innerHTML = r();
-  document.querySelectorAll('[data-a]').forEach(el => {
-    el.addEventListener('click', e => { e.preventDefault(); actions[el.dataset.a]?.(el); });
-  });
+  bindActions();
   // File input
   const fi = $('fileInput');
   if (fi) fi.addEventListener('change', e => { if (e.target.files[0]) handleImage(e.target.files[0]); });
-  // Live search
+  // Live search (targeted update to avoid full re-render)
   const si = $('searchInput');
   if (si) {
-    si.addEventListener('input', e => { S.searchQuery = e.target.value; render(); $('searchInput')?.focus(); });
+    si.addEventListener('input', () => {
+      S.searchQuery = si.value;
+      const list = $('searchResults');
+      if (list) { list.innerHTML = renderSearchResults(); bindActions(list); }
+      // Update done button
+      const doneWrap = $('doneWrap');
+      if (doneWrap) { doneWrap.innerHTML = renderDoneButton(); bindActions(doneWrap); }
+    });
     if (_pendingFocus === 'search') { si.focus(); _pendingFocus = null; }
+  }
+  // Live textarea count
+  const ta = $('ocrText');
+  if (ta) {
+    ta.addEventListener('input', () => {
+      S.ocrText = ta.value;
+      const chips = $('reviewChips');
+      if (chips) chips.innerHTML = renderReviewChips();
+    });
   }
 }
 
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function escA(s) { return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function bindActions(root) {
+  (root || document).querySelectorAll('[data-a]').forEach(el => {
+    if (el._bound) return;
+    el._bound = true;
+    el.addEventListener('click', e => { e.preventDefault(); actions[el.dataset.a]?.(el); });
+  });
+}
 
-// ======================== ICONS (inline SVG) ========================
-const icons = {
-  camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>',
-  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
-  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
-  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
-  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>',
-  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-  chevL: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>',
-  chevR: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>',
-  upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
-};
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function pl(n, word) { return `${n} ${word}${n !== 1 ? 's' : ''}`; }
+
+// ======================== ICONS ========================
+function icon(name, size=20) {
+  const paths = {
+    camera: '<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>',
+    edit: '<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+    home: '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    users: '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>',
+    settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>',
+    plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+    chevL: '<polyline points="15 18 9 12 15 6"/>',
+    chevR: '<polyline points="9 18 15 12 9 6"/>',
+    back: '<polyline points="15 18 9 12 15 6"/>',
+    clipboard: '<path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>',
+  };
+  const sw = name === 'chevL' || name === 'chevR' || name === 'back' ? '2.5' : '2';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||''}</svg>`;
+}
 
 // ======================== SCREENS ========================
 
 function renderHome() {
   return `
-  <div class="screen screen-center">
+  <main class="screen screen-center">
     <div class="stack gap-3 center" style="max-width:340px;width:100%">
-      <div class="logo" style="margin:0 auto 8px">▲</div>
-      <div class="h1">UpNext</div>
-      <div class="muted" style="margin-bottom:24px">Know when your kid goes.<br>Any sport. Any event.</div>
+      <div class="logo" style="margin:0 auto 8px" role="img" aria-label="UpNext logo">▲</div>
+      <h1 class="h1">UpNext</h1>
+      <p class="muted" style="margin-bottom:24px">Know when your kid goes.<br>Any sport. Any event.</p>
       ${S.meet ? `
-        <button class="btn btn-primary" data-a="continueMeet">Continue Meet (${S.totalEvents} events)</button>
+        <button class="btn btn-primary" data-a="continueMeet" aria-label="Continue meet with ${S.totalEvents} events">${pl(S.totalEvents,'event')} loaded — Continue</button>
         <div class="muted tiny center" style="margin:4px 0">or start fresh</div>
       ` : ''}
-      <label class="btn btn-outline" style="cursor:pointer">
-        ${icons.camera} Scan Heat Sheet
-        <input type="file" accept="image/*" capture="environment" id="fileInput" style="display:none">
+      <label class="btn btn-outline" style="cursor:pointer" role="button" tabindex="0" aria-label="Scan heat sheet with camera">
+        ${icon('camera')} Scan Heat Sheet
+        <input type="file" accept="image/*" capture="environment" id="fileInput" style="display:none" aria-hidden="true">
       </label>
-      <button class="btn btn-outline" data-a="pasteMode">${icons.edit} Paste / Type Schedule</button>
+      <button class="btn btn-outline" data-a="pasteMode">${icon('edit')} Paste / Type Schedule</button>
+      <button class="btn btn-outline" data-a="clipboardPaste">${icon('clipboard')} Paste from Clipboard</button>
       <button class="btn-ghost" data-a="loadDemo" style="margin-top:8px">Load demo meet</button>
     </div>
-  </div>`;
+  </main>`;
+}
+
+function renderReviewChips() {
+  const parsed = parseHeatSheet(S.ocrText);
+  const evts = parsed.length;
+  const swims = parsed.reduce((n,e) => n + e.heats.reduce((m,h) => m + h.swimmers.length, 0), 0);
+  return `<span class="chip chip-accent">${pl(evts,'event')}</span><span class="chip chip-amber">${pl(swims,'entry','entries')}</span>`;
 }
 
 function renderReview() {
-  const parsed = parseHeatSheet(S.ocrText);
-  const evtCount = parsed.length;
-  const swimCount = parsed.reduce((n,e) => n + e.heats.reduce((m,h) => m + h.swimmers.length, 0), 0);
   return `
-  <div class="screen pad stack gap-3">
-    <div class="h2">Review Schedule</div>
-    <div class="row gap-2">
-      <span class="chip chip-accent">${evtCount} events</span>
-      <span class="chip chip-amber">${swimCount} entries</span>
-    </div>
-    <textarea id="ocrText" class="input flex1" style="min-height:40vh" placeholder="Paste or type the schedule here...
+  <main class="screen pad stack gap-3">
+    <h2 class="h2">Review Schedule</h2>
+    <div id="reviewChips" class="row gap-2">${renderReviewChips()}</div>
+    <textarea id="ocrText" class="input flex1" style="min-height:40vh" aria-label="Heat sheet text" placeholder="Paste or type the schedule here...
 
 Format:
 Event 1 - Girls 25 Free
@@ -265,10 +274,10 @@ Heat 1 of 2
 2 Johnson, Lily  WAVE  23.10">${esc(S.ocrText)}</textarea>
     <button class="btn btn-primary" data-a="confirmSchedule">Looks Good — Find My Athlete</button>
     <button class="btn-ghost center" data-a="goHome">Start over</button>
-  </div>`;
+  </main>`;
 }
 
-function renderFind() {
+function renderSearchResults() {
   const allSw = getAllSwimmers();
   const q = S.searchQuery.toLowerCase().trim();
   const parts = q.split(/\s+/);
@@ -278,46 +287,53 @@ function renderFind() {
   }) : [];
   const tracked = new Set(S.swimmers.map(s => s.name));
 
-  return `
-  <div class="screen pad stack gap-3">
-    <div class="h2">Find Your Athlete</div>
-    <div class="muted small">Type your child's name to find their events</div>
-    <div class="row gap-2">
-      <input id="searchInput" class="input flex1" type="text" placeholder="e.g. Emma Smith" value="${esc(S.searchQuery)}">
-    </div>
-    <div class="scroll stack gap-2">
-      ${q.length >= 2 && results.length === 0 ? `<div class="muted center" style="padding:40px 0">No matches for "${esc(q)}"</div>` : ''}
-      ${results.map(s => `
-        <div class="card ${tracked.has(s.name) ? 'card-green' : ''}">
-          <div class="row between">
-            <div>
-              <div class="h3">${esc(s.name)}</div>
-              <div class="small muted2">${s.entries.length} event${s.entries.length!==1?'s':''}: ${s.entries.map(e=>'#'+e.eventNum).join(', ')}</div>
-            </div>
-            ${tracked.has(s.name)
-              ? `<span class="small bold" style="color:var(--green)">Added</span>`
-              : `<button class="btn btn-primary btn-sm" data-a="addSwimmer" data-name="${escA(s.name)}">Track</button>`}
-          </div>
+  if (q.length < 2) return `<div class="muted center" style="padding:40px 0">Type at least 2 characters to search</div>`;
+  if (results.length === 0) return `<div class="muted center" style="padding:40px 0">No matches for "${esc(q)}"</div>`;
+  return results.map(s => `
+    <div class="card ${tracked.has(s.name) ? 'card-green' : ''}">
+      <div class="row between">
+        <div>
+          <div class="h3">${esc(s.name)}</div>
+          <div class="small muted2">${pl(s.entries.length,'event')}: ${s.entries.map(e=>'#'+e.eventNum).join(', ')}</div>
         </div>
-      `).join('')}
+        ${tracked.has(s.name)
+          ? `<span class="small bold" style="color:var(--green)">Added</span>`
+          : `<button class="btn btn-primary btn-sm" data-a="addSwimmer" data-name="${escA(s.name)}">Track</button>`}
+      </div>
     </div>
-    ${S.swimmers.length > 0 ? `
-      <button class="btn btn-primary" data-a="goDashboard">Done — Dashboard (${S.swimmers.length} athlete${S.swimmers.length!==1?'s':''})</button>
-    ` : ''}
+  `).join('');
+}
+
+function renderDoneButton() {
+  if (S.swimmers.length === 0) return '';
+  return `<button class="btn btn-primary" data-a="goDashboard">Done — Dashboard (${pl(S.swimmers.length,'athlete')})</button>`;
+}
+
+function renderFind() {
+  return `
+  <main class="screen pad stack gap-3">
+    <div class="row gap-2">
+      <button class="btn-sm" data-a="goReview" aria-label="Back to review" style="padding:8px 4px">${icon('back',22)}</button>
+      <h2 class="h2 flex1">Find Your Athlete</h2>
+    </div>
+    <p class="muted small">Type your child's name to find their events</p>
+    <input id="searchInput" class="input" type="text" placeholder="e.g. Emma Smith" value="${esc(S.searchQuery)}" aria-label="Search swimmer name">
+    <div id="searchResults" class="scroll stack gap-2">${renderSearchResults()}</div>
+    <div id="doneWrap">${renderDoneButton()}</div>
     <button class="btn-ghost center" data-a="goDashboard">Skip for now</button>
-  </div>`;
+  </main>`;
 }
 
 function renderApp() {
   const tabs = { dashboard: renderDashboard, tracker: renderTracker, swimmers: renderSwimmers, settings: renderSettings };
   return `
   <div class="screen">
-    <div class="scroll">${(tabs[S.tab]||renderDashboard)()}</div>
-    <nav class="nav">
-      ${[['dashboard','Dashboard',icons.home],['tracker','Tracker',icons.clock],['swimmers','Athletes',icons.users],['settings','Settings',icons.settings]]
-        .map(([id,label,icon]) => `
-          <button class="nav-item ${S.tab===id?'active':''}" data-a="switchTab" data-tab="${id}">
-            ${icon}<span>${label}</span>
+    <main class="scroll">${(tabs[S.tab]||renderDashboard)()}</main>
+    <nav class="nav" aria-label="Main navigation">
+      ${[['dashboard','Dashboard','home'],['tracker','Tracker','clock'],['swimmers','Athletes','users'],['settings','Settings','settings']]
+        .map(([id,label,ic]) => `
+          <button class="nav-item ${S.tab===id?'active':''}" data-a="switchTab" data-tab="${id}" aria-label="${label}" aria-current="${S.tab===id?'page':'false'}">
+            ${icon(ic,22)}<span>${label}</span>
           </button>`).join('')}
     </nav>
   </div>`;
@@ -329,16 +345,16 @@ function renderDashboard() {
   const entries = getMyEntries();
   if (!entries.length) return `
     <div class="pad center" style="padding:80px 24px">
-      <div class="muted" style="font-size:48px;margin-bottom:12px">▲</div>
+      <div style="font-size:48px;margin-bottom:12px;opacity:.3">▲</div>
       <div class="muted">No athletes tracked yet</div>
-      <div class="small muted" style="margin-top:4px">Go to Athletes tab to add one</div>
+      <p class="small muted" style="margin-top:4px">Go to the Athletes tab to add one</p>
     </div>`;
 
   return `
-  <div class="pad stack gap-3">
+  <section class="pad stack gap-3" aria-label="Event dashboard">
     <div class="row between">
-      <div class="h2">Dashboard</div>
-      <span class="chip chip-accent">Event ${S.currentEvent} of ${S.totalEvents}</span>
+      <h2 class="h2">Dashboard</h2>
+      <span class="chip chip-accent" aria-live="polite">Event ${S.currentEvent} of ${S.totalEvents}</span>
     </div>
     ${entries.map(e => {
       const away = e.eventNum - S.currentEvent;
@@ -348,9 +364,9 @@ function renderDashboard() {
       else if (away===1) { status='UP NEXT'; cls='card-amber'; }
       else { status=`~${away*S.settings.minutesPerEvent} min`; cls=''; }
       return `
-      <div class="card ${cls}">
+      <article class="card ${cls}" aria-label="${e.swimmerName}, Event ${e.eventNum}, ${status}">
         <div class="row between" style="align-items:flex-start">
-          <div class="flex1">
+          <div class="flex1" style="min-width:0">
             <div class="row gap-2" style="margin-bottom:4px">
               <span class="evt-badge">Event ${e.eventNum}</span>
               <span class="tiny muted2">Heat ${e.heat} / Lane ${e.lane}</span>
@@ -358,51 +374,51 @@ function renderDashboard() {
             <div class="h3">${esc(e.swimmerName)}</div>
             <div class="small muted2" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.eventName)}</div>
           </div>
-          <div class="center" style="margin-left:12px">
+          <div class="center" style="margin-left:12px;flex-shrink:0">
             <div class="small bold ${away<=1&&away>=0?'pulse':''}" style="color:${away<0?'var(--text3)':away===0?'var(--green)':away===1?'var(--amber)':'var(--accent)'}">${status}</div>
-            ${away>0?`<div class="tiny muted">${away} event${away!==1?'s':''} away</div>`:''}
+            ${away>0?`<div class="tiny muted">${pl(away,'event')} away</div>`:''}
           </div>
         </div>
-      </div>`;
+      </article>`;
     }).join('')}
-  </div>`;
+  </section>`;
 }
 
 function renderTracker() {
   const evt = S.meet?.find(e => e.number === S.currentEvent);
   return `
-  <div class="pad stack gap-4">
-    <div class="h2 center">Event Tracker</div>
+  <section class="pad stack gap-4" aria-label="Event tracker">
+    <h2 class="h2 center">Event Tracker</h2>
     <div class="card center" style="padding:32px 16px;box-shadow:var(--shadow-lg)">
       <div class="small muted2">Current Event</div>
-      <div class="big-num">${S.currentEvent}</div>
+      <div class="big-num" aria-live="polite">${S.currentEvent}</div>
       ${evt ? `<div class="small muted2" style="margin-top:4px;padding:0 16px">${esc(evt.name)}</div>` : ''}
       <div class="tiny muted" style="margin-top:4px">of ${S.totalEvents} events</div>
     </div>
     <div class="row gap-3">
-      <button class="btn btn-outline flex1" data-a="prevEvent" ${S.currentEvent<=1?'disabled style="opacity:.3"':''}>
-        ${icons.chevL} Prev
+      <button class="btn btn-outline flex1" data-a="prevEvent" ${S.currentEvent<=1?'disabled':''} aria-label="Previous event">
+        ${icon('chevL')} Prev
       </button>
-      <button class="btn btn-primary flex1" data-a="nextEvent" ${S.currentEvent>=S.totalEvents?'disabled style="opacity:.3"':''}>
-        Next ${icons.chevR}
+      <button class="btn btn-primary flex1" data-a="nextEvent" ${S.currentEvent>=S.totalEvents?'disabled':''} aria-label="Next event">
+        Next ${icon('chevR')}
       </button>
     </div>
     <div class="card stack gap-2">
-      <div class="small muted2">Jump to event</div>
+      <label for="jumpInput" class="small muted2">Jump to event</label>
       <div class="row gap-2">
-        <input id="jumpInput" class="input flex1" type="number" min="1" max="${S.totalEvents}" placeholder="1–${S.totalEvents}" style="text-align:center">
+        <input id="jumpInput" class="input flex1" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="1\u2013${S.totalEvents}" style="text-align:center" aria-label="Event number">
         <button class="btn btn-outline btn-sm" data-a="jumpEvent">Go</button>
       </div>
     </div>
-  </div>`;
+  </section>`;
 }
 
 function renderSwimmers() {
   return `
-  <div class="pad stack gap-3">
+  <section class="pad stack gap-3" aria-label="My athletes">
     <div class="row between">
-      <div class="h2">My Athletes</div>
-      <button class="btn btn-primary btn-sm" data-a="goFind">${icons.plus} Add</button>
+      <h2 class="h2">My Athletes</h2>
+      <button class="btn btn-primary btn-sm" data-a="goFind">${icon('plus',16)} Add</button>
     </div>
     ${!S.swimmers.length ? `<div class="muted center" style="padding:60px 0">No athletes tracked</div>` : ''}
     ${S.swimmers.map(s => `
@@ -410,48 +426,56 @@ function renderSwimmers() {
         <div class="row between">
           <div>
             <div class="h3">${esc(s.name)}</div>
-            <div class="small muted2">${s.entries.length} event${s.entries.length!==1?'s':''}: ${s.entries.map(e=>'#'+e.eventNum).join(', ')}</div>
+            <div class="small muted2">${pl(s.entries.length,'event')}: ${s.entries.map(e=>'#'+e.eventNum).join(', ')}</div>
           </div>
-          <button class="btn-sm btn-danger" data-a="removeSwimmer" data-name="${escA(s.name)}">Remove</button>
+          <button class="btn-sm btn-danger" data-a="removeSwimmer" data-name="${escA(s.name)}" aria-label="Remove ${esc(s.name)}">Remove</button>
         </div>
       </div>
     `).join('')}
     <button class="btn-ghost center btn-danger" data-a="resetMeet" style="margin-top:24px">Reset Meet &amp; Start Over</button>
-  </div>`;
+  </section>`;
 }
 
 function renderSettings() {
   return `
-  <div class="pad stack gap-4">
-    <div class="h2">Settings</div>
+  <section class="pad stack gap-4" aria-label="Settings">
+    <h2 class="h2">Settings</h2>
     <div class="card stack gap-4">
       <div>
-        <div class="small bold muted2">Minutes per event (estimate)</div>
-        <div class="tiny muted" style="margin:2px 0 6px">Used to estimate time until your athlete's event</div>
-        <input id="setMpe" class="input" type="number" min="1" max="15" value="${S.settings.minutesPerEvent}" style="text-align:center">
+        <label for="setMpe" class="small bold muted2">Minutes per event (estimate)</label>
+        <p class="tiny muted" style="margin:2px 0 6px">Used to estimate time until your athlete's event</p>
+        <input id="setMpe" class="input" type="text" inputmode="numeric" pattern="[0-9]*" value="${S.settings.minutesPerEvent}" style="text-align:center">
       </div>
       <div>
-        <div class="small bold muted2">Alert events ahead</div>
-        <div class="tiny muted" style="margin:2px 0 6px">How many events before your athlete to alert you</div>
-        <input id="setAlert" class="input" type="number" min="1" max="10" value="${S.settings.alertEventsAhead}" style="text-align:center">
+        <label for="setAlert" class="small bold muted2">Alert events ahead</label>
+        <p class="tiny muted" style="margin:2px 0 6px">How many events before your athlete to alert you</p>
+        <input id="setAlert" class="input" type="text" inputmode="numeric" pattern="[0-9]*" value="${S.settings.alertEventsAhead}" style="text-align:center">
       </div>
       <button class="btn btn-primary" data-a="saveSettings">Save</button>
     </div>
-    <div class="muted tiny center" style="margin-top:20px">UpNext v1.0</div>
-  </div>`;
+    <div class="muted tiny center" style="margin-top:20px">UpNext v1.1</div>
+  </section>`;
 }
 
 // ======================== ACTIONS ========================
 const actions = {
-  continueMeet() { S.screen='app'; S.tab='dashboard'; render(); },
+  continueMeet() { S.screen='app'; S.tab='dashboard'; render(); checkAlerts(); },
   pasteMode() { S.ocrText=''; S.screen='review'; render(); },
   loadDemo() { S.ocrText=DEMO; S.screen='review'; render(); },
   goHome() { S.screen='home'; render(); },
+  goReview() { S.screen='review'; render(); },
+  async clipboardPaste() {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text?.trim()) { S.ocrText = text; S.screen = 'review'; render(); }
+      else { toast('Clipboard is empty'); }
+    } catch(e) { toast('Clipboard access denied'); S.ocrText=''; S.screen='review'; render(); }
+  },
   confirmSchedule() {
     const ta = $('ocrText');
     if (ta) S.ocrText = ta.value;
     const parsed = parseHeatSheet(S.ocrText);
-    if (!parsed.length) { alert('No events found. Make sure events are labeled "Event 1", "Event 2", etc.'); return; }
+    if (!parsed.length) { showConfirm('No Events Found', 'Make sure events are labeled "Event 1", "Event 2", etc.', 'OK', null); return; }
     S.meet = parsed; S.totalEvents = parsed.length; S.currentEvent = 1;
     S.swimmers = []; S.alertsShown = {};
     persist();
@@ -467,61 +491,73 @@ const actions = {
       S.swimmers.push({ name: found.name, entries: found.entries });
       persist();
     }
-    render();
+    // Targeted update instead of full re-render
+    const list = $('searchResults');
+    if (list) { list.innerHTML = renderSearchResults(); bindActions(list); }
+    const doneWrap = $('doneWrap');
+    if (doneWrap) { doneWrap.innerHTML = renderDoneButton(); bindActions(doneWrap); }
   },
   goDashboard() { S.screen='app'; S.tab='dashboard'; persist(); render(); checkAlerts(); },
-  switchTab(el) { S.tab = el.dataset.tab; render(); },
+  switchTab(el) {
+    S.tab = el.dataset.tab;
+    render();
+    if (S.tab === 'dashboard') checkAlerts();
+  },
   prevEvent() { if (S.currentEvent>1) { S.currentEvent--; persist(); render(); checkAlerts(); } },
   nextEvent() { if (S.currentEvent<S.totalEvents) { S.currentEvent++; persist(); render(); checkAlerts(); } },
   jumpEvent() {
-    const v = parseInt($('jumpInput')?.value);
-    if (v>=1 && v<=S.totalEvents) { S.currentEvent=v; persist(); render(); checkAlerts(); }
+    const v = parseInt($('jumpInput')?.value, 10);
+    if (!v || v < 1 || v > S.totalEvents) { toast('Enter a number between 1 and ' + S.totalEvents); return; }
+    S.currentEvent = v; persist(); render(); checkAlerts();
   },
   goFind() { S.screen='find'; S.searchQuery=''; _pendingFocus='search'; render(); },
   removeSwimmer(el) {
-    if (!confirm(`Stop tracking ${el.dataset.name}?`)) return;
-    S.swimmers = S.swimmers.filter(s => s.name !== el.dataset.name);
-    persist(); render();
+    const name = el.dataset.name;
+    showConfirm('Remove Athlete?', `Stop tracking ${name}?`, 'Remove', () => {
+      S.swimmers = S.swimmers.filter(s => s.name !== name);
+      persist(); render();
+    });
   },
   resetMeet() {
-    if (!confirm('Reset everything? This clears the meet and all tracked athletes.')) return;
-    S.meet=null; S.swimmers=[]; S.currentEvent=1; S.totalEvents=0; S.alertsShown={};
-    LS.clear(); S.screen='home'; render();
+    showConfirm('Reset Everything?', 'This clears the meet and all tracked athletes.', 'Reset', () => {
+      S.meet=null; S.swimmers=[]; S.currentEvent=1; S.totalEvents=0; S.alertsShown={};
+      LS.clear(); S.screen='home'; render();
+    });
   },
   saveSettings() {
-    const mpe = parseInt($('setMpe')?.value) || 3;
-    const aa = parseInt($('setAlert')?.value) || 2;
+    const mpe = parseInt($('setMpe')?.value,10) || 3;
+    const aa = parseInt($('setAlert')?.value,10) || 2;
     S.settings = { minutesPerEvent: Math.max(1,Math.min(15,mpe)), alertEventsAhead: Math.max(1,Math.min(10,aa)) };
     persist();
-    showAlert('Saved', 'Settings updated.', false);
+    toast('Settings saved');
   },
-  dismissAlert() { document.querySelector('.overlay')?.remove(); },
+  dismissOverlay() { dismissCurrentAlert(); },
 };
 
-// ======================== OCR (Tesseract.js, lazy loaded) ========================
+// ======================== OCR ========================
 let tesseractLoaded = false;
 async function handleImage(file) {
   if (!tesseractLoaded) {
-    showAlert('Loading OCR...', 'First scan takes a moment to download the text recognition engine.', false);
+    showModal('Loading OCR...', 'First scan takes a moment to download the text recognition engine.');
     const s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
     document.head.appendChild(s);
     await new Promise((res,rej) => { s.onload=res; s.onerror=rej; });
     tesseractLoaded = true;
-    document.querySelector('.overlay')?.remove();
+    dismissCurrentAlert();
   }
-  showAlert('Reading...', 'Recognizing text from image...', false);
+  showModal('Reading...', 'Recognizing text from image...');
   try {
     const worker = await Tesseract.createWorker('eng');
     const { data: { text } } = await worker.recognize(file);
     await worker.terminate();
-    document.querySelector('.overlay')?.remove();
+    dismissCurrentAlert();
     S.ocrText = text;
     S.screen = 'review';
     render();
   } catch (e) {
-    document.querySelector('.overlay')?.remove();
-    alert('OCR failed: ' + e.message + '\n\nTry pasting the text instead.');
+    dismissCurrentAlert();
+    showConfirm('OCR Failed', e.message + '\n\nTry pasting the text instead.', 'OK', null);
   }
 }
 
@@ -532,8 +568,8 @@ function parseHeatSheet(text) {
   for (const raw of text.split(/\r?\n/)) {
     const line = raw.trim();
     if (!line) continue;
-    const em = line.match(/^Event\s*#?\s*(\d+)\s*[-–—:.]\s*(.*)/i) || line.match(/^Event\s*#?\s*(\d+)\s+(.*)/i);
-    if (em) { curEvent = { number:+em[1], name:em[2].trim().replace(/^[-–—:.\s]+/,''), heats:[] }; events.push(curEvent); curHeat=null; continue; }
+    const em = line.match(/^Event\s*#?\s*(\d+)\s*[-\u2013\u2014:.]\s*(.*)/i) || line.match(/^Event\s*#?\s*(\d+)\s+(.*)/i);
+    if (em) { curEvent = { number:+em[1], name:em[2].trim().replace(/^[-\u2013\u2014:.\s]+/,''), heats:[] }; events.push(curEvent); curHeat=null; continue; }
     const hm = line.match(/^Heat\s*#?\s*(\d+)/i);
     if (hm && curEvent) { curHeat = { number:+hm[1], swimmers:[] }; curEvent.heats.push(curHeat); continue; }
     if (curEvent) {
@@ -569,22 +605,86 @@ function getMyEntries() {
   return entries;
 }
 
-// ======================== ALERTS ========================
-function showAlert(title, body, urgent) {
-  document.querySelector('.overlay')?.remove();
+// ======================== ALERT QUEUE ========================
+const alertQueue = [];
+let alertShowing = false;
+
+function queueAlert(title, body, urgent) {
+  // Urgent alerts go to front of queue
+  if (urgent) alertQueue.unshift({ title, body, urgent });
+  else alertQueue.push({ title, body, urgent });
+  if (!alertShowing) showNextAlert();
+}
+
+function showNextAlert() {
+  if (alertQueue.length === 0) { alertShowing = false; return; }
+  alertShowing = true;
+  const { title, body, urgent } = alertQueue.shift();
   const div = document.createElement('div');
   div.className = 'overlay';
+  div.id = 'currentAlert';
+  div.setAttribute('role', 'alertdialog');
+  div.setAttribute('aria-label', title);
   div.innerHTML = `
     <div class="overlay-card">
-      <div style="font-size:36px;margin-bottom:12px">${urgent ? '🏁' : '▲'}</div>
+      <div style="font-size:36px;margin-bottom:12px">${urgent ? '\u{1F3C1}' : '\u25B2'}</div>
       <div class="h2" style="margin-bottom:8px">${esc(title)}</div>
       <div class="muted2" style="white-space:pre-line;margin-bottom:16px">${esc(body)}</div>
-      <button class="btn btn-primary" data-a="dismissAlert" style="max-width:200px;margin:0 auto">Got it</button>
+      <button class="btn btn-primary" style="max-width:200px;margin:0 auto" id="alertDismiss">Got it</button>
     </div>`;
   document.body.appendChild(div);
-  div.querySelector('[data-a]').addEventListener('click', () => div.remove());
+  const dismiss = () => { div.remove(); showNextAlert(); };
+  div.querySelector('#alertDismiss').addEventListener('click', dismiss);
+  div.addEventListener('click', e => { if (e.target === div) dismiss(); });
   if (urgent && 'vibrate' in navigator) navigator.vibrate([200,100,200,100,200]);
-  setTimeout(() => div.remove(), 20000);
+}
+
+function dismissCurrentAlert() {
+  const el = $('currentAlert');
+  if (el) { el.remove(); alertShowing = false; showNextAlert(); }
+}
+
+// Non-blocking modal (for OCR loading etc)
+function showModal(title, body) {
+  dismissCurrentAlert();
+  const div = document.createElement('div');
+  div.className = 'overlay'; div.id = 'currentAlert';
+  div.innerHTML = `<div class="overlay-card">
+    <div style="font-size:36px;margin-bottom:12px">\u25B2</div>
+    <div class="h2" style="margin-bottom:8px">${esc(title)}</div>
+    <div class="muted2">${esc(body)}</div>
+  </div>`;
+  document.body.appendChild(div);
+  alertShowing = true;
+}
+
+// Confirm dialog (replaces native confirm())
+function showConfirm(title, body, actionLabel, onConfirm) {
+  const div = document.createElement('div');
+  div.className = 'overlay'; div.id = 'confirmDialog';
+  div.setAttribute('role', 'alertdialog');
+  div.innerHTML = `<div class="overlay-card">
+    <div class="h2" style="margin-bottom:8px">${esc(title)}</div>
+    <div class="muted2" style="white-space:pre-line;margin-bottom:20px">${esc(body)}</div>
+    <div class="row gap-2" style="justify-content:center">
+      ${onConfirm ? `<button class="btn btn-outline" id="confirmCancel" style="flex:1">Cancel</button>` : ''}
+      <button class="btn ${onConfirm ? 'btn-primary' : 'btn-primary'}" id="confirmOk" style="flex:1;${!onConfirm?'max-width:200px':''}">${esc(actionLabel)}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(div);
+  const close = () => div.remove();
+  $('confirmOk').addEventListener('click', () => { close(); onConfirm?.(); });
+  if (onConfirm) $('confirmCancel').addEventListener('click', close);
+  div.addEventListener('click', e => { if (e.target === div) close(); });
+}
+
+// Toast (non-blocking, auto-dismiss)
+function toast(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const div = document.createElement('div');
+  div.className = 'toast'; div.textContent = msg;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 2500);
 }
 
 function checkAlerts() {
@@ -593,14 +693,29 @@ function checkAlerts() {
       const away = e.eventNum - S.currentEvent;
       const key = `${sw.name}-${e.eventNum}-${away}`;
       if (S.alertsShown[key]) continue;
-      if (away === 0) { S.alertsShown[key]=1; showAlert('NOW!', `${sw.name}\nEvent ${e.eventNum}, Heat ${e.heat}, Lane ${e.lane}\n${e.eventName}`, true); }
-      else if (away === 1) { S.alertsShown[key]=1; showAlert('UP NEXT!', `${sw.name} is next!\nEvent ${e.eventNum}, Heat ${e.heat}, Lane ${e.lane}`, true); }
+      if (away === 0) { S.alertsShown[key]=1; queueAlert('NOW!', `${sw.name}\nEvent ${e.eventNum}, Heat ${e.heat}, Lane ${e.lane}\n${e.eventName}`, true); }
+      else if (away === 1) { S.alertsShown[key]=1; queueAlert('UP NEXT!', `${sw.name} is next!\nEvent ${e.eventNum}, Heat ${e.heat}, Lane ${e.lane}`, true); }
       else if (away > 0 && away <= S.settings.alertEventsAhead) {
         S.alertsShown[key]=1;
-        showAlert(`${away} Events Away`, `${sw.name} in ~${away*S.settings.minutesPerEvent} min\nEvent ${e.eventNum}, Heat ${e.heat}, Lane ${e.lane}`, false);
+        queueAlert(`${pl(away,'Event')} Away`, `${sw.name} in ~${away*S.settings.minutesPerEvent} min\nEvent ${e.eventNum}, Heat ${e.heat}, Lane ${e.lane}`, false);
       }
     }
+  persist(); // persist alertsShown
 }
+
+// ======================== KEYBOARD ========================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const confirm = $('confirmDialog');
+    if (confirm) { confirm.remove(); return; }
+    dismissCurrentAlert();
+  }
+});
+
+// ======================== PLURALIZE HELPER ========================
+// Override pl for irregular plurals
+const _pl = pl;
+function pl(n, word, plural) { return `${n} ${n !== 1 ? (plural || word + 's') : word}`; }
 
 // ======================== DEMO DATA ========================
 const DEMO = `Spring Invitational 2026
